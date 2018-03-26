@@ -129,22 +129,41 @@
         "type": "ui_tab",
         "z": "",
         "name": "Power Display",
-        "icon": "dashboard"
+        "icon": "dashboard",
+        "order": 1
+    },
+    {
+        "id": "d543cf7b.ea34b",
+        "type": "ui_tab",
+        "z": "",
+        "name": "Settings",
+        "icon": "dashboard",
+        "order": 2
+    },
+    {
+        "id": "732812c8.91fadc",
+        "type": "ui_group",
+        "z": "",
+        "name": "Settings",
+        "tab": "d543cf7b.ea34b",
+        "order": 1,
+        "disp": false,
+        "width": "6",
+        "collapse": false
     },
     {
         "id": "7d83ed5d.3bf774",
         "type": "mqtt in",
         "z": "465cfd27.107674",
         "name": "",
-        "topic": "zeroIoc01/power/get/reading",
+        "topic": "power/+/readings/echo",
         "qos": "0",
         "broker": "aaff1184.c14",
-        "x": 270,
+        "x": 180,
         "y": 180,
         "wires": [
             [
-                "eed643ea.09067",
-                "cd4649fa.cbf988"
+                "7e4c605c.da251"
             ]
         ]
     },
@@ -183,7 +202,7 @@
             "#c5b0d5"
         ],
         "useOldStyle": false,
-        "x": 630,
+        "x": 670,
         "y": 360,
         "wires": [
             [],
@@ -202,18 +221,18 @@
         "gtype": "gage",
         "title": "",
         "label": "Watts",
-        "format": "{{value}}",
+        "format": "{{value | number:0}}",
         "min": 0,
-        "max": "200",
+        "max": "2000",
         "colors": [
             "#00b500",
             "#e6e600",
             "#ca3838"
         ],
-        "seg1": "",
-        "seg2": "",
-        "x": 630,
-        "y": 320,
+        "seg1": "600",
+        "seg2": "1600",
+        "x": 690,
+        "y": 300,
         "wires": []
     },
     {
@@ -252,5 +271,315 @@
                 "45c04072.0d433"
             ]
         ]
+    },
+    {
+        "id": "34759999.d71b56",
+        "type": "inject",
+        "z": "465cfd27.107674",
+        "name": "Init",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "x": 170,
+        "y": 480,
+        "wires": [
+            [
+                "c01e063f.19c5d8"
+            ]
+        ]
+    },
+    {
+        "id": "a62173a0.f3d8b",
+        "type": "mqtt out",
+        "z": "465cfd27.107674",
+        "name": "",
+        "topic": "power/zeroIoc01/settings/get",
+        "qos": "0",
+        "retain": "false",
+        "broker": "aaff1184.c14",
+        "x": 540,
+        "y": 480,
+        "wires": []
+    },
+    {
+        "id": "c01e063f.19c5d8",
+        "type": "delay",
+        "z": "465cfd27.107674",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "5",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "x": 320,
+        "y": 480,
+        "wires": [
+            [
+                "a62173a0.f3d8b"
+            ]
+        ]
+    },
+    {
+        "id": "d24673a8.6b75f",
+        "type": "function",
+        "z": "465cfd27.107674",
+        "name": "Get Power",
+        "func": "msg.payload = msg.payload.power;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 530,
+        "y": 180,
+        "wires": [
+            [
+                "cd4649fa.cbf988",
+                "eed643ea.09067"
+            ]
+        ]
+    },
+    {
+        "id": "7e4c605c.da251",
+        "type": "json",
+        "z": "465cfd27.107674",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 390,
+        "y": 180,
+        "wires": [
+            [
+                "d24673a8.6b75f"
+            ]
+        ]
+    },
+    {
+        "id": "b66da251.2b963",
+        "type": "mqtt in",
+        "z": "465cfd27.107674",
+        "name": "",
+        "topic": "power/+/settings/echo",
+        "qos": "0",
+        "broker": "aaff1184.c14",
+        "x": 160,
+        "y": 680,
+        "wires": [
+            [
+                "6ae1ff4b.169ad"
+            ]
+        ]
+    },
+    {
+        "id": "6ae1ff4b.169ad",
+        "type": "json",
+        "z": "465cfd27.107674",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 340,
+        "y": 680,
+        "wires": [
+            [
+                "ba6b7990.a7d4d8"
+            ]
+        ]
+    },
+    {
+        "id": "ba6b7990.a7d4d8",
+        "type": "function",
+        "z": "465cfd27.107674",
+        "name": "Store Settings",
+        "func": "msg.topic = 'powerMeterSettings';\nglobal.set('powerMeterSettings', msg);\nglobal.set('stagedPowerMeterSettings', msg);\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 510,
+        "y": 680,
+        "wires": [
+            [
+                "ff306f3e.6b5e5"
+            ]
+        ]
+    },
+    {
+        "id": "65b155ed.296eac",
+        "type": "ui_text_input",
+        "z": "465cfd27.107674",
+        "name": "Bandwidth",
+        "label": "Bandwidth",
+        "group": "732812c8.91fadc",
+        "order": 1,
+        "width": "6",
+        "height": "2",
+        "passthru": false,
+        "mode": "text",
+        "delay": "300",
+        "topic": "bandwidth",
+        "x": 940,
+        "y": 640,
+        "wires": [
+            [
+                "e9b66fba.9ec01"
+            ]
+        ]
+    },
+    {
+        "id": "ff306f3e.6b5e5",
+        "type": "function",
+        "z": "465cfd27.107674",
+        "name": "Parse Settings",
+        "func": "var bandwidth = \n{\n    'topic':'bandwidth',\n    'payload':msg.payload.bandwidth\n}\nvar powerCal = \n{\n    'topic':'powerCal',\n    'payload':msg.payload.powerCal\n}\nvar powerOffset = \n{\n    'topic':'powerOffset',\n    'payload':msg.payload.powerOffset\n}\nreturn [bandwidth, powerCal, powerOffset, msg];",
+        "outputs": 3,
+        "noerr": 0,
+        "x": 710,
+        "y": 680,
+        "wires": [
+            [
+                "65b155ed.296eac"
+            ],
+            [
+                "24818858.747748"
+            ],
+            [
+                "3c5b7570.4b3aaa"
+            ]
+        ]
+    },
+    {
+        "id": "24818858.747748",
+        "type": "ui_text_input",
+        "z": "465cfd27.107674",
+        "name": "PowerCal",
+        "label": "Power Cal",
+        "group": "732812c8.91fadc",
+        "order": 2,
+        "width": "6",
+        "height": "2",
+        "passthru": false,
+        "mode": "text",
+        "delay": "300",
+        "topic": "powerCal",
+        "x": 930,
+        "y": 680,
+        "wires": [
+            [
+                "e9b66fba.9ec01"
+            ]
+        ]
+    },
+    {
+        "id": "3c5b7570.4b3aaa",
+        "type": "ui_text_input",
+        "z": "465cfd27.107674",
+        "name": "Power Offset",
+        "label": "Power Offset",
+        "group": "732812c8.91fadc",
+        "order": 3,
+        "width": "6",
+        "height": "2",
+        "passthru": false,
+        "mode": "text",
+        "delay": "300",
+        "topic": "powerOffset",
+        "x": 940,
+        "y": 720,
+        "wires": [
+            [
+                "e9b66fba.9ec01"
+            ]
+        ]
+    },
+    {
+        "id": "e9b66fba.9ec01",
+        "type": "function",
+        "z": "465cfd27.107674",
+        "name": "Hold New settings",
+        "func": "var stagedPowerMeterSettings = global.get('stagedPowerMeterSettings');\nstagedPowerMeterSettings.payload[msg.topic] = Number(msg.payload);\nglobal.set('stagedPowerMeterSettings',stagedPowerMeterSettings)\nreturn stagedPowerMeterSettings;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1170,
+        "y": 680,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "ede72f3.a0141d",
+        "type": "ui_template",
+        "z": "465cfd27.107674",
+        "group": "732812c8.91fadc",
+        "name": "Refresh",
+        "order": 4,
+        "width": "3",
+        "height": "1",
+        "format": "<md-button \n    ng-style=\"{color:'black', background:'lime'}\"\n    ng-disabled='false'\n    ng-click=\"send({payload:true})\">Refresh</md-button>\n",
+        "storeOutMessages": false,
+        "fwdInMessages": false,
+        "templateScope": "local",
+        "x": 300,
+        "y": 540,
+        "wires": [
+            [
+                "a62173a0.f3d8b"
+            ]
+        ]
+    },
+    {
+        "id": "98727a05.79ae78",
+        "type": "ui_template",
+        "z": "465cfd27.107674",
+        "group": "732812c8.91fadc",
+        "name": "Set",
+        "order": 4,
+        "width": "3",
+        "height": "1",
+        "format": "<md-button \n    ng-style=\"{color:'black', background:'yellow'}\"\n    ng-disabled='false'\n    ng-click=\"send({payload:true})\">Set</md-button>\n",
+        "storeOutMessages": false,
+        "fwdInMessages": false,
+        "templateScope": "local",
+        "x": 270,
+        "y": 780,
+        "wires": [
+            [
+                "d13aaa4.0e5ee58"
+            ]
+        ]
+    },
+    {
+        "id": "d13aaa4.0e5ee58",
+        "type": "function",
+        "z": "465cfd27.107674",
+        "name": "Send Staged settings",
+        "func": "return global.get('stagedPowerMeterSettings');",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 470,
+        "y": 780,
+        "wires": [
+            [
+                "d8562faa.8138"
+            ]
+        ]
+    },
+    {
+        "id": "d8562faa.8138",
+        "type": "mqtt out",
+        "z": "465cfd27.107674",
+        "name": "",
+        "topic": "power/zeroIoc01/settings/set",
+        "qos": "0",
+        "retain": "false",
+        "broker": "aaff1184.c14",
+        "x": 740,
+        "y": 780,
+        "wires": []
     }
 ]
