@@ -79,7 +79,7 @@
             }
         },
         "site": {
-            "name": "Node-RED Dashboard",
+            "name": "yv-powermeter",
             "hideToolbar": "false",
             "allowSwipe": "false",
             "dateFormat": "DD/MM/YYYY",
