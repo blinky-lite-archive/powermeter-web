@@ -79,7 +79,7 @@
             }
         },
         "site": {
-            "name": "yv-powermeter",
+            "name": "Power Meter",
             "hideToolbar": "false",
             "allowSwipe": "false",
             "dateFormat": "DD/MM/YYYY",
@@ -436,7 +436,7 @@
         "type": "function",
         "z": "465cfd27.107674",
         "name": "Parse Settings",
-        "func": "var bandwidth = \n{\n    'topic':'bandwidth',\n    'payload':msg.payload.bandwidth\n}\nvar powerCal = \n{\n    'topic':'powerCal',\n    'payload':msg.payload.powerCal\n}\nvar powerOffset = \n{\n    'topic':'powerOffset',\n    'payload':msg.payload.powerOffset\n}\nreturn [bandwidth, powerCal, powerOffset, msg];",
+        "func": "var bandwidth = \n{\n    'topic':'bandwidth',\n    'payload':msg.payload.bandwidth\n}\nvar powerCal = \n{\n    'topic':'powerCal',\n    'payload':msg.payload.powerCal\n}\nvar powerOffset = \n{\n    'topic':'powerOffset',\n    'payload':msg.payload.powerOffset\n}\nreturn [bandwidth, powerCal, powerOffset];",
         "outputs": 3,
         "noerr": 0,
         "x": 710,
