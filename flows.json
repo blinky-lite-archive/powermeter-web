@@ -128,7 +128,7 @@
         "id": "8cd6d87c.7b3a58",
         "type": "ui_tab",
         "z": "",
-        "name": "Power Display",
+        "name": "Power",
         "icon": "dashboard",
         "order": 1
     },
@@ -138,7 +138,7 @@
         "z": "",
         "name": "Settings",
         "icon": "dashboard",
-        "order": 2
+        "order": 3
     },
     {
         "id": "732812c8.91fadc",
@@ -146,6 +146,25 @@
         "z": "",
         "name": "Settings",
         "tab": "d543cf7b.ea34b",
+        "order": 1,
+        "disp": false,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "219909f3.685736",
+        "type": "ui_tab",
+        "z": "",
+        "name": "Energy",
+        "icon": "dashboard",
+        "order": 2
+    },
+    {
+        "id": "3efdfa06.283d16",
+        "type": "ui_group",
+        "z": "",
+        "name": "Energy",
+        "tab": "219909f3.685736",
         "order": 1,
         "disp": false,
         "width": "6",
@@ -171,7 +190,7 @@
         "id": "cd4649fa.cbf988",
         "type": "ui_chart",
         "z": "465cfd27.107674",
-        "name": "",
+        "name": "Power Plot",
         "group": "c70e062d.61a598",
         "order": 2,
         "width": 0,
@@ -202,7 +221,7 @@
             "#c5b0d5"
         ],
         "useOldStyle": false,
-        "x": 670,
+        "x": 690,
         "y": 360,
         "wires": [
             [],
@@ -213,7 +232,7 @@
         "id": "eed643ea.09067",
         "type": "ui_gauge",
         "z": "465cfd27.107674",
-        "name": "",
+        "name": "Power Gauge",
         "group": "c70e062d.61a598",
         "order": 1,
         "width": 0,
@@ -231,7 +250,7 @@
         ],
         "seg1": "600",
         "seg2": "1600",
-        "x": 690,
+        "x": 720,
         "y": 300,
         "wires": []
     },
@@ -260,7 +279,7 @@
         "order": 9,
         "width": "0",
         "height": "0",
-        "format": "<md-button \n    ng-style=\"{color:'black', background:'lime'}\"\n    ng-disabled='false'\n    ng-click=\"send({payload:true})\">Restart Plot</md-button>\n",
+        "format": "<md-button \n    ng-style=\"{color:'black', background:'lime'}\"\n    ng-disabled='false'\n    ng-click=\"send({payload:true})\">Restart Power</md-button>\n",
         "storeOutMessages": false,
         "fwdInMessages": false,
         "templateScope": "local",
@@ -288,7 +307,8 @@
         "y": 480,
         "wires": [
             [
-                "c01e063f.19c5d8"
+                "c01e063f.19c5d8",
+                "7be20581.08d51c"
             ]
         ]
     },
@@ -333,15 +353,21 @@
         "type": "function",
         "z": "465cfd27.107674",
         "name": "Get Power",
-        "func": "msg.payload = msg.payload.power;\nreturn msg;",
-        "outputs": 1,
+        "func": "var power = msg.payload.power\nvar now = new Date().getTime();\nvar dt = (now - global.get('time')) / 1000.0 / 3600.0;\nglobal.set('time',now);\nvar intPow = global.get('intPow');\nvar lastPower = context.get('lastPower') || 0;\nvar cycles = global.get('cycles');\nif (power > 100.0)\n{\n    var dintPow = power * dt / 1000.0;\n    intPow = dintPow + intPow;\n    global.set('intPow', intPow);\n    if (lastPower < 100)\n    {\n        cycles = cycles + 1;\n        global.set('cycles', cycles);\n    }\n}\ncontext.set('lastPower',power);\nvar intPowMsg = {'topic':'intPow','payload':intPow};\nvar powMsg = {'topic':'power','payload':power};\nvar cyclesMsg = {'topic':'cycles','payload':cycles};\nreturn [intPowMsg, cyclesMsg, powMsg];",
+        "outputs": 3,
         "noerr": 0,
         "x": 530,
         "y": 180,
         "wires": [
             [
-                "cd4649fa.cbf988",
-                "eed643ea.09067"
+                "2b18aa09.1d30d6"
+            ],
+            [
+                "680a4337.68143c"
+            ],
+            [
+                "eed643ea.09067",
+                "cd4649fa.cbf988"
             ]
         ]
     },
@@ -524,7 +550,7 @@
         "storeOutMessages": false,
         "fwdInMessages": false,
         "templateScope": "local",
-        "x": 300,
+        "x": 340,
         "y": 540,
         "wires": [
             [
@@ -581,5 +607,177 @@
         "x": 740,
         "y": 780,
         "wires": []
+    },
+    {
+        "id": "7be20581.08d51c",
+        "type": "function",
+        "z": "465cfd27.107674",
+        "name": "Reset Integration",
+        "func": "global.set('intPow',0);\nglobal.set('cycles',0);\nglobal.set('time',new Date().getTime());\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 370,
+        "y": 600,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "2b18aa09.1d30d6",
+        "type": "ui_chart",
+        "z": "465cfd27.107674",
+        "name": "Energy Plot",
+        "group": "3efdfa06.283d16",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "label": "",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "",
+        "ymax": "",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "3600",
+        "cutout": 0,
+        "useOneColor": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "useOldStyle": false,
+        "x": 770,
+        "y": 140,
+        "wires": [
+            [],
+            []
+        ]
+    },
+    {
+        "id": "5cf1e402.4c724c",
+        "type": "function",
+        "z": "465cfd27.107674",
+        "name": "BlankPlot",
+        "func": "global.set('intPow',0);\nglobal.set('cycles',0);\nmsg.payload = [];\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 560,
+        "y": 80,
+        "wires": [
+            [
+                "2b18aa09.1d30d6"
+            ]
+        ]
+    },
+    {
+        "id": "aaf0f80d.524898",
+        "type": "ui_template",
+        "z": "465cfd27.107674",
+        "group": "3efdfa06.283d16",
+        "name": "Restart Energy",
+        "order": 2,
+        "width": "0",
+        "height": "0",
+        "format": "<md-button \n    ng-style=\"{color:'black', background:'lime'}\"\n    ng-disabled='false'\n    ng-click=\"send({payload:true})\">Restart Energy</md-button>\n",
+        "storeOutMessages": false,
+        "fwdInMessages": false,
+        "templateScope": "local",
+        "x": 400,
+        "y": 80,
+        "wires": [
+            [
+                "5cf1e402.4c724c"
+            ]
+        ]
+    },
+    {
+        "id": "e1e32130.1e659",
+        "type": "ui_template",
+        "z": "465cfd27.107674",
+        "group": "3efdfa06.283d16",
+        "name": "Restart Cycles",
+        "order": 4,
+        "width": "0",
+        "height": "0",
+        "format": "<md-button \n    ng-style=\"{color:'black', background:'lime'}\"\n    ng-disabled='false'\n    ng-click=\"send({payload:true})\">Restart Cycles</md-button>\n",
+        "storeOutMessages": false,
+        "fwdInMessages": false,
+        "templateScope": "local",
+        "x": 820,
+        "y": 60,
+        "wires": [
+            [
+                "e497e064.c018a"
+            ]
+        ]
+    },
+    {
+        "id": "e497e064.c018a",
+        "type": "function",
+        "z": "465cfd27.107674",
+        "name": "BlankPlot",
+        "func": "global.set('intPow',0);\nglobal.set('cycles',0);\nmsg.payload = [];\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 980,
+        "y": 60,
+        "wires": [
+            [
+                "680a4337.68143c"
+            ]
+        ]
+    },
+    {
+        "id": "680a4337.68143c",
+        "type": "ui_chart",
+        "z": "465cfd27.107674",
+        "name": "Cycle Plot",
+        "group": "3efdfa06.283d16",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "label": "",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "",
+        "ymax": "",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "3600",
+        "cutout": 0,
+        "useOneColor": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "useOldStyle": false,
+        "x": 1060,
+        "y": 180,
+        "wires": [
+            [],
+            []
+        ]
     }
 ]
